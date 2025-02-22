@@ -36,13 +36,14 @@ const CustomForm:React.FC<CustomFormProps> = ({submitButtonText}) => {
    
       const submitForm = () => {
         setSubmitPress(true)
-        if(title.trim() && description.trim() && startDate && endDate && endDate > startDate){
+        if(title.trim() && description.trim() && startDate && endDate && endDate >= startDate){
             let newtask = {
                 id: Date.now().toString(),
                 title: title,
                 description: description,
-                startDate: startDate.toLocaleDateString(),
-                endDate: endDate.toLocaleDateString()
+                startDate: startDate.toString(),
+                endDate: endDate.toString(),
+                isCompleted: false
             }
             setSubmitPress(false)
             dispatch(addTask(newtask))
@@ -53,6 +54,9 @@ const CustomForm:React.FC<CustomFormProps> = ({submitButtonText}) => {
             navigation.goBack()
         }
       }
+      
+      console.log(typeof startDate);
+      console.log(startDate);
       
       
   return (

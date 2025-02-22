@@ -3,22 +3,26 @@ import CustomSafeAreaView from '@/components/CustomSafeAreaView';
 import TaskDisplay from '@/components/TaskDisplay';
 import { Colors } from '@/constants/Colors';
 import { AppUseSelector } from '@/redux/reduxHooks';
-import { Link, useNavigation } from 'expo-router';
+import { useNavigation } from 'expo-router';
 import {StyleSheet, Text, TouchableOpacity, View , FlatList, TextInput} from 'react-native';
 import { RootState } from '@/redux/store';
 import { useEffect, useState } from 'react';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 interface Task {
   id: string;
   title: string;
   description: string;
   startDate: string;  
-  endDate: string;    
+  endDate: string;  
+  isCompleted: boolean;  
 }
+
 
 export default function HomeScreen() {
   const navigation = useNavigation()
   const response = AppUseSelector((state: RootState) => state.tasks )
+  const pendingTask = response.tasks.filter(t => t.isCompleted !== true)
   
   const [searchQuery, setSearchQuery] = useState('')
   const [responseTask, setResponseTask] = useState<Task[]>([])
@@ -29,11 +33,8 @@ export default function HomeScreen() {
       task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       task.description.toLowerCase().includes(searchQuery.toLowerCase()) 
     )
-
    setResponseTask(result)
   }
-
-
 
   useEffect(() => {
       const debounce = setTimeout(() => {
@@ -46,9 +47,7 @@ export default function HomeScreen() {
 
       return () => clearInterval(debounce)
   }, [searchQuery])
-console.log(responseTask);
 
-  
 
   return (
     <CustomSafeAreaView>
@@ -62,12 +61,15 @@ console.log(responseTask);
         </Text>
       </View>
       <View style={styles.searchComponent}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search tasks..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
+        <View style={styles.searchBox}>
+          <AntDesign  name='search1' size={25} color={Colors.inactive_tint}/>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search tasks..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
         {responseTask.length > 0 && (
           <FlatList
               style={styles.searchResult}
@@ -75,7 +77,7 @@ console.log(responseTask);
               keyExtractor={(task) => task.id}
               renderItem={({item}) => (
                 <View>
-                    <TouchableOpacity style={styles.resultTask} onPress={() => navigation.navigate('UpdateTask', {id: item.id})}>
+                    <TouchableOpacity style={styles.resultTask} onPress={() => navigation.navigate('TaskDetailsScreen', {id: item.id})}>
                     <Text style={{color: Colors.white}}>{item.title}</Text>
                     <Text style={{color: Colors.white, fontSize: 12}}>{item.description}</Text>    
                   </TouchableOpacity>
@@ -86,25 +88,22 @@ console.log(responseTask);
       </View>
       <Text style={styles.text}>Your Task :-</Text>
       {
-        response.tasks.length > 0 ? 
+        pendingTask.length > 0 ? 
           <FlatList 
-              data={response.tasks}
+              data={pendingTask}
               keyExtractor={(items) => items.id}
-              renderItem={(task) => <TaskDisplay task={task.item}/>}
+              renderItem={(task) => {
+                return ( 
+                  <TaskDisplay key={task.item.id} task={task.item}/>
+                )
+              }}
           />
         :
           <View style={styles.noTaskContainer}>
              <Text style={styles.noTaskText}>No Task To Complete</Text>
           </View> 
       }
-      
-      // Add Task Btn
-      <TouchableOpacity 
-            style={styles.addTaskBtn}
-            onPress={() => navigation.navigate('AddTask')}
-            >      
-            <Text style={styles.addtext}>Add Task</Text>
-          </TouchableOpacity>
+
    </CustomSafeAreaView>
   );
 }
@@ -171,11 +170,7 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   searchInput:{
-   fontSize: 14,
-   marginBottom: 10,
-   borderWidth: 1,
-   borderColor: Colors.card,
-   backgroundColor: Colors.white,
+   fontSize: 14,  
   },
   searchResult:{
     borderWidth: 1,
@@ -188,6 +183,18 @@ const styles = StyleSheet.create({
     marginTop: 50,
     zIndex: 1,
     marginLeft: 4
+  },
+  searchBox:{
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: Colors.card,
+    backgroundColor: Colors.white,
+    alignItems: 'center',
+    marginBottom: 10,
+    gap: 6,
+    paddingHorizontal: 10,
+    borderRadius: 10
+
   },
   resultTask:{
     marginBottom: 6,

@@ -7,6 +7,7 @@ interface Task {
     description: string;
     startDate: string;  
     endDate: string;    
+    isCompleted: boolean;
   }
   
   interface InitialProps {
@@ -25,15 +26,12 @@ const taskSlice = createSlice({
             state.tasks.push(action.payload)
         },
         updateTask: (state, action: PayloadAction<Task>) => {
-            console.log('called');
-            console.log(action.payload)
             const index = state.tasks.findIndex(task => task.id === action.payload.id);
             if (index !== -1) {
               state.tasks[index] = action.payload;
             }
           },
         deleteTask: (state, action: PayloadAction<string>) => {
-            
             state.tasks = state.tasks.filter(task => task.id !== action.payload);
           },
         },

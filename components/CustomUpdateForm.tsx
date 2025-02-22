@@ -11,11 +11,12 @@ interface Task {
     id: string;
     title: string;
     description: string;
-    startDate: Date | null;
-    endDate: Date | null;
+    startDate: Date;
+    endDate: Date;
+    isCompleted: boolean;
 }
 
-// Define the type for the taskToUpdate prop
+
 interface CustomUpdateFormProps {
     task: Task;
 }
@@ -25,8 +26,8 @@ const CustomUpdateForm:React.FC<CustomUpdateFormProps> = ({task}) => {
     const navigation = useNavigation()
     const [title, setTitle] = useState<string>(task.title ||'')
     const [description, setDescription] = useState<string>( task.description ||'')
-    const [startDate, setStartDate] = useState<Date | string>(task.startDate || new Date());
-    const [endDate, setEndDate] = useState<Date | string>( task.endDate || new Date());
+    const [startDate, setStartDate] = useState<Date>(new Date(task.startDate));
+    const [endDate, setEndDate] = useState<Date>( new Date(task.endDate ));
     const [showStartPicker, setShowStartPicker] = useState(false);
     const [showEndPicker, setShowEndPicker] = useState(false);
     const [submitPress, setSubmitPress] = useState<boolean>(false)
@@ -46,15 +47,17 @@ const CustomUpdateForm:React.FC<CustomUpdateFormProps> = ({task}) => {
       };
    
       const submitForm = () => {
-        
         setSubmitPress(true)
-        if(title.trim() && description.trim() && startDate && endDate && endDate > startDate){
+        
+        console.log('->' ,task);
+        if(title.trim() !== '' && description.trim() !== '' && startDate && endDate && endDate > startDate){
             let updatedTask = {
                 id: task.id,
-                title: title,
-                description: description,
-                startDate: typeof startDate == 'string'? startDate : startDate.toLocaleDateString(),
-                endDate: typeof endDate == 'string' ? endDate :endDate.toLocaleDateString()
+                title: title.trim(),
+                description: description.trim(),
+                startDate:  startDate.toString() ,
+                endDate: endDate.toString(),
+                isCompleted: task.isCompleted
             }
             
             setSubmitPress(false)

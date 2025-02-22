@@ -4,7 +4,7 @@ export enum Colors {
   card = '#162640',
   text = '#fff',
   border = '#484C56',
-  cartColor = ' #009688 ',
+  cartColor ='#009688',
   white = '#FFFFFF',
   inactive_tint = '#4b535e',
   disabled = '#D9D9D9',
@@ -13,5 +13,7 @@ export enum Colors {
   lightText = '#888',
   black = '#000',
   submit = '#f9e4bc',
-  displayCard =  '#81c784'
+  displayCard =  '#2eb17f',
+  botton= '#ffce20',
+  iris= '#5D3FD3'
 }

@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 import {Provider} from 'react-redux'
 import { store, persistor } from '@/redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
+import { mergeScreen } from '@/navigation/ScreenCollections';
 
 export default function RootLayout() {
   
@@ -14,23 +15,19 @@ export default function RootLayout() {
     <Provider store={store}>
         <PersistGate loading={null} persistor={persistor} >
      <Stack
-          initialRouteName='index'
+          initialRouteName='(tabs)'
           screenOptions={{
             headerShown: false
           }}
           >
-            <Stack.Screen 
-              name='index'
-              options={{}}
-              />
-            <Stack.Screen 
-              name='AddTask'
-              options={{}}
-              />
-            <Stack.Screen 
-              name='UpdateTask'
-              options={{}}
-              />
+            {mergeScreen.map((item,index) => {
+                return (
+                  <Stack.Screen 
+                    key={index}
+                    name={item}
+                  />
+                )
+            })}
         </Stack>
         </PersistGate>
       </Provider>
